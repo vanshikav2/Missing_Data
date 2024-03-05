@@ -1,13 +1,12 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Dealing with Missing Data "
+subtitle: "Strategies and Best Practices"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Vanshika Vanshika
+thanks: "Code and data are available at: https://github.com/vanshikav2/Missing_Data."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This paper delves into the issues of missing data in datasets and outlines various strategies to reduce its impact on analyses. Through a comprehensive review, we found that missing data can occur randomly or systematically, focusing on the importance of tailoring specific response to the type of missing data. By implementing techniques such as imputation and model-based methods, researchers can salvage valuable information from incomplete datasets, thereby enhancing the reliability and accuracy of their analyses. Furthermore, by effectively managing missing data, this research contributes to the refinement of analytical methodologies and strengthens the validity of conclusions drawn from empirical studies."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -25,191 +24,40 @@ library(palmerpenguins)
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. 
-
-The remainder of this paper is structured as follows. @sec-data....
+Imagine you’re working on a data analysis or machine learning project and you come across some gaps in your dataset. This is what we call ‘missing data’, and it’s a pretty common hurdle for us data enthusiasts. It’s like expecting a full puzzle but finding out some pieces are missing. These gaps can pop up for all sorts of reasons - maybe there was a hiccup during data collection, some data got corrupted, or perhaps some participants chose not to share certain information.
 
 
+Missing data is a common problem encountered in data analysis and machine learning tasks. According to @little2019, "Missing data is a ubiquitous problem in empirical research." It refers to the absence of values in a dataset where values were expected to be present. This absence can occur for various reasons, including data collection errors, data corruption, or deliberate omission by participants. As @schafer1997 points out, "Dealing with missing data is crucial as it can lead to biased results, reduced statistical power, and inaccurate predictions if not handled properly." 
 
-# Data {#sec-data}
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
-```
-
-Talk way more about it. 
+In this document, we will explore what missing data is, its types, and strategies to handle it effectively.
 
 
+# Understanding Missing Data
 
-# Model
+Missing data can manifest in different forms:
 
-The goal of our modelling strategy is twofold. Firstly,...
+1. **Missing Completely at Random (MCAR)**: When the probability of data being missing is the same for all observations, regardless of other variables. This type of missingness implies that the missingness is unrelated to any observed or unobserved variables.
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+2. **Missing at Random (MAR)**: When the probability of data being missing is related to other observed variables but not to the missing data itself. In other words, once we account for other observed variables, there's no systematic difference between missing and observed data.
 
-## Model set-up
+3. **Missing Not at Random (MNAR)**: When the probability of data being missing is related to the missing data itself, even after accounting for observed variables. In this case, the missingness mechanism is dependent on unobserved data, making it challenging to address.
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+# Dealing with Missing Data
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+Handling missing data requires careful consideration and appropriate strategies. Here are some commonly used approaches:
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+1. **Complete Case Analysis (CCA)**: This approach involves discarding any observations with missing values. While simple, it can lead to biased results, especially if the missingness is not random and introduces systematic biases into the analysis.
 
+2. **Imputation**: Imputation methods replace missing values with estimated values based on other observed data. Common imputation techniques include mean imputation, median imputation, mode imputation, regression imputation, and multiple imputation. Imputation can help preserve sample size and statistical power but may introduce bias if not done carefully.
 
-### Model justification
+3. **Model-based Methods**: These methods involve modeling the distribution of the data, including missing values, and using this model to impute missing values or perform analysis directly. Techniques such as Expectation-Maximization (EM) algorithm and Bayesian methods fall under this category.
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+4. **Data Augmentation**: In cases where missing data are related to specific variables, adding additional data features that capture this missingness pattern can help improve model performance. This approach requires domain knowledge and careful feature engineering.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+# Conclusion
 
+Missing data poses significant challenges in data analysis and machine learning, but with the right strategies, it can be effectively managed. By understanding the types of missing data and employing appropriate handling techniques, researchers can ensure the integrity and accuracy of their analyses. Additionally, addressing missing data contributes to the advancement of analytical methodologies and strengthens the validity of conclusions drawn from empirical studies.
 
-# Results
-
-Our results are summarized in @tbl-modelresults.
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("outputs/models/first_model.rds"))
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
-
-
-
-
-# Discussion
-
-## First discussion point {#sec-first-point}
-
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
-
-## Second discussion point
-
-## Third discussion point
-
-## Weaknesses and next steps
-
-Weaknesses and next steps should also be included.
-
-\newpage
-
-\appendix
-
-# Appendix {-}
-
-
-# Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
 
 
 
